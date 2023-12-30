@@ -1,0 +1,96 @@
+<div>
+  <div class="tl-main-container">
+    <div class="tl-col">
+      <!-- <div
+        *ngFor="let col of getDropColumns(); index as i"
+        [style.left]="getDropColumnLeftOffset(i)"
+        class="tl-col-item"
+        (click)="addProject(col)"
+      ></div> -->
+      <div
+        *ngFor="let month of days; index as i"
+        [style.left]="getMonthLeftOffset(i)"
+        class="position-relative"
+      >
+        <div
+          *ngFor="let d of month.days; index as i"
+          class="tl-col-item"
+          [style.left]="i * 40 + 'px'"
+          (click)="addProject(i)"
+        >
+        </div>
+      </div>
+      <div
+        [style.left]="getTodayLeftOffsetWithTime()"
+        style="
+          position: absolute;
+          height: 100%;
+          border-right: 1px solid rgb(211, 79, 67);
+        "
+      ></div>
+    </div>
+
+    <div
+      class="tl-numbers-continer"
+      [style.width]="getDropColumns().length * 40 + 'px'"
+    >
+      <div class="tl-numbers-row">
+        <div
+          *ngFor="let month of days; index as i"
+          class="tl-months-item"
+          [style.left]="getMonthLeftOffset(i)"
+        >
+          {{ month.month }}
+        </div>
+      </div>
+      <div class="tl-numbers-row">
+        <div
+          *ngFor="let month of days; index as i"
+          [style.left]="getMonthLeftOffset(i)"
+          class="tl-months-item"
+        >
+          <div
+            *ngFor="let d of month.days; index as i"
+            class="tl-days-item"
+            [style.left]="i * 40 + 'px'"
+          >
+            {{ d }}
+          </div>
+        </div>
+        <div
+          class="tl-highlighted-number-container"
+          [style.left]="getTodayLeftOffset()"
+        >
+          <div class="position-relative">
+            <div class="tl-today-color"></div>
+            <span style="position: relative; color: white">30</span>
+          </div>
+        </div>
+      </div>
+      <div
+        [style.left]="getTodayLeftOffsetWithTime()"
+        style="
+          position: absolute;
+          top: 61px;
+          width: 8px;
+          height: 8px;
+          background: rgb(211, 79, 67);
+          border-radius: 100%;
+          transform: translateX(-3.5px);
+        "
+      ></div>
+    </div>
+
+    <div class="tl-row">
+      <div
+        *ngFor="let row of data"
+        class="card"
+        [style.left]="getProjectLeftOffset(row.startDate)"
+      >
+        <div>{{ row.priority }}</div>
+        {{ row.project }}
+        <div>Status: {{ row.status }}</div>
+      </div>
+    </div>
+  </div>
+</div>
