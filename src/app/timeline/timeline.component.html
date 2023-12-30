@@ -1,96 +1,156 @@
-<div>
-  <div class="tl-main-container">
-    <div class="tl-col">
-      <!-- <div
-        *ngFor="let col of getDropColumns(); index as i"
-        [style.left]="getDropColumnLeftOffset(i)"
-        class="tl-col-item"
-        (click)="addProject(col)"
-      ></div> -->
-      <div
-        *ngFor="let month of days; index as i"
-        [style.left]="getMonthLeftOffset(i)"
-        class="position-relative"
-      >
-        <div
-          *ngFor="let d of month.days; index as i"
-          class="tl-col-item"
-          [style.left]="i * 40 + 'px'"
-          (click)="addProject(i)"
-        >
-        </div>
-      </div>
-      <div
-        [style.left]="getTodayLeftOffsetWithTime()"
-        style="
-          position: absolute;
-          height: 100%;
-          border-right: 1px solid rgb(211, 79, 67);
-        "
-      ></div>
+<mat-drawer-container class="sidenav-container" autosize>
+  <mat-drawer #drawer class="sidenav" mode="side">
+    <div class="flexbox">
+      <h3>Projects</h3>
     </div>
+    <div class="position-absolute" style="top: 129px">
+      <div
+        *ngFor="let row of data; trackBy: trackByIndex"
+        class="project-card-height border-top p-2 text-truncate"
+        style="cursor: pointer"
+        [matTooltip]="row.startDate + ' to ' + row.launchDate"
+        (click)="scrollToProjectCard(row)"
+      >
+        <span class="text-truncate">{{ row.project }}</span>
+      </div>
+      <div
+        class="project-card-height border-top p-2"
+        style="cursor: pointer"
+        
+        (click)="addProject()"
+      >
+        <button mat-icon-button>Add <mat-icon>add</mat-icon></button>
+      </div>
+    </div>
+  </mat-drawer>
 
-    <div
-      class="tl-numbers-continer"
-      [style.width]="getDropColumns().length * 40 + 'px'"
-    >
-      <div class="tl-numbers-row">
-        <div
-          *ngFor="let month of days; index as i"
-          class="tl-months-item"
-          [style.left]="getMonthLeftOffset(i)"
-        >
-          {{ month.month }}
+  <div>
+    <div class="pt-2" style="height: 4rem">
+      <button
+        class="position-absolute"
+        mat-icon-button
+        matTooltip="Show list"
+        (click)="drawer.toggle()"
+      >
+        <mat-icon *ngIf="!drawer.opened">
+          keyboard_double_arrow_right
+        </mat-icon>
+        <mat-icon *ngIf="drawer.opened"> keyboard_double_arrow_left </mat-icon>
+      </button>
+      <div class="d-flex">
+        <span style="flex: 1 1 auto"></span>
+        <div>
+          <button mat-flat-button (click)="scrollToElement(today)" class="me-2">
+            Today
+          </button>
+          <mat-form-field appearance="outline">
+            <mat-label>View</mat-label>
+            <mat-select value="month">
+              <mat-option value="" disabled>Hours</mat-option>
+              <mat-option value="" disabled="">Day</mat-option>
+              <mat-option value="" disabled>Week</mat-option>
+              <mat-option value="month">Month</mat-option>
+              <mat-option value="" disabled="">Year</mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
       </div>
-      <div class="tl-numbers-row">
+    </div>
+    <div class="tl-main-container">
+      <div class="tl-col" [style.height]="data.length * 40 + 150 + 'px'">
         <div
           *ngFor="let month of days; index as i"
           [style.left]="getMonthLeftOffset(i)"
-          class="tl-months-item"
+          class="position-relative"
         >
           <div
             *ngFor="let d of month.days; index as i"
-            class="tl-days-item"
+            class="tl-col-item"
             [style.left]="i * 40 + 'px'"
+            (click)="addProject(month.year, month.month, d)"
+          ></div>
+        </div>
+        <div
+          [style.left]="getTodayLeftOffsetWithTime()"
+          style="
+            position: absolute;
+            height: 100%;
+            border-right: 1px solid rgb(211, 79, 67);
+          "
+        ></div>
+      </div>
+
+      <div
+        class="tl-numbers-continer"
+        [style.width]="getDropColumns().length * 40 + 'px'"
+      >
+        <div class="tl-numbers-row">
+          <div
+            *ngFor="let month of days; index as i"
+            class="tl-months-item"
+            [style.left]="getMonthLeftOffset(i)"
           >
-            {{ d }}
+            {{ month.month }} {{ month.year }}
+          </div>
+        </div>
+        <div class="tl-numbers-row">
+          <div
+            *ngFor="let month of days; index as i"
+            [style.left]="getMonthLeftOffset(i)"
+            class="tl-months-item"
+          >
+            <div
+              *ngFor="let d of month.days; index as i"
+              class="tl-days-item"
+              [style.left]="i * 40 + 'px'"
+            >
+              {{ d }}
+            </div>
+          </div>
+          <div
+            class="tl-highlighted-number-container"
+            [style.left]="getTodayLeftOffset()"
+            #today
+          >
+            <div class="position-relative">
+              <div class="tl-today-color"></div>
+              <span style="position: relative; color: white">{{ currentDate.getDate() }}</span>
+            </div>
           </div>
         </div>
         <div
-          class="tl-highlighted-number-container"
-          [style.left]="getTodayLeftOffset()"
-        >
-          <div class="position-relative">
-            <div class="tl-today-color"></div>
-            <span style="position: relative; color: white">30</span>
-          </div>
-        </div>
+          [style.left]="getTodayLeftOffsetWithTime()"
+          style="
+            position: absolute;
+            top: 61px;
+            width: 8px;
+            height: 8px;
+            z-index: 1;
+            background: rgb(211, 79, 67);
+            border-radius: 100%;
+            transform: translateX(-3.5px);
+          "
+        ></div>
       </div>
-      <div
-        [style.left]="getTodayLeftOffsetWithTime()"
-        style="
-          position: absolute;
-          top: 61px;
-          width: 8px;
-          height: 8px;
-          background: rgb(211, 79, 67);
-          border-radius: 100%;
-          transform: translateX(-3.5px);
-        "
-      ></div>
-    </div>
 
-    <div class="tl-row">
-      <div
-        *ngFor="let row of data"
-        class="card"
-        [style.left]="getProjectLeftOffset(row.startDate)"
+      <div class="tl-row">
+        <div
+          *ngFor="let row of data; trackBy: trackByIndex"
+          class="card project-card-height p-1"
+          [style.left]="getProjectLeftOffset(row.startDate)"
+          [style.width]="getProjectCardWidth(row)"
+          style="cursor: pointer"
+          (click)="openProject(row)"
+          [id]="'project-' + row.id"
+          [matTooltip]="row.startDate + ' to ' + row.launchDate"
+        >
+          {{ row.project }} | {{ row.priority }} | Stage: {{ row.stage }}
+        </div>
+        <div
+        class="d-none card project-card-height p-1"
       >
-        <div>{{ row.priority }}</div>
-        {{ row.project }}
-        <div>Status: {{ row.status }}</div>
+      </div>
       </div>
     </div>
   </div>
-</div>
+</mat-drawer-container>

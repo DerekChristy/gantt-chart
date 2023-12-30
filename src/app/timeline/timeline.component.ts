@@ -1,4 +1,16 @@
-import { ChangeDetectionStrategy, Component, OnInit, TrackByFunction } from '@angular/core'
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  TrackByFunction,
+  ViewChild
+} from '@angular/core'
+import { MatDialog } from '@angular/material/dialog'
+import { ProjectDetailsDialogComponent } from '../project-details-dialog/project-details-dialog.component'
+
+const GRID_WIDTH = 40
 
 @Component({
   selector: 'app-timeline',
@@ -6,7 +18,7 @@ import { ChangeDetectionStrategy, Component, OnInit, TrackByFunction } from '@an
   styleUrls: ['./timeline.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TimelineComponent implements OnInit {
+export class TimelineComponent implements OnInit, AfterViewInit {
   columns = []
   months = [
     'January',
@@ -24,6 +36,7 @@ export class TimelineComponent implements OnInit {
   ]
   data = [
     {
+      id: 1,
       project: 'Sports category on Netflix',
       priority: 'P0',
       stage: 'Scoping',
@@ -37,6 +50,7 @@ export class TimelineComponent implements OnInit {
       participants: ['Eng 1', 'Eng 4', 'D1']
     },
     {
+      id: 2,
       project: 'Public landing page',
       priority: 'P0',
       stage: 'Launched',
@@ -50,6 +64,7 @@ export class TimelineComponent implements OnInit {
       participants: ['Eng 1', 'Eng 3', 'M1']
     },
     {
+      id: 3,
       project: 'Search Box',
       priority: 'P0',
       stage: 'Launched',
@@ -63,6 +78,7 @@ export class TimelineComponent implements OnInit {
       participants: ['Eng 1', 'Eng 3', 'M1']
     },
     {
+      id: 4,
       project: 'Search suggestions',
       priority: 'P1',
       stage: 'Launched',
@@ -76,7 +92,6 @@ export class TimelineComponent implements OnInit {
       participants: ['Eng 1', 'Eng 3', 'M1']
     }
 
-
     // 	P0	Launched	100%	At risk	mobile; users	3	9-4-2023	10-16-2023	Prod1	Eng1; Eng 4; D1
     // Search box	P0	Testing	80%	On track	mobile; desktop; users	0	10-9-2023	1-9-2024	Prod1	Eng2; Eng3; M1
     // Search suggestions 	P1	Implementation	60%	On track	mobile; desktop; users	0	10-16-2023	1-16-2024	Prod1	Eng2; Eng3; M1
@@ -87,20 +102,35 @@ export class TimelineComponent implements OnInit {
   ]
 
   days: any[] = []
+  years = [2022, 2023, 2024]
+  currentDate = new Date()
+  @ViewChild('today') todayEl: any
 
-  constructor() {
-    this.months.forEach((m, index) => {
-      const numberOfDays = new Date(2023, index + 1, 0).getDate()
-      const days = Array(numberOfDays)
-        .fill(1)
-        .map((x, i) => i + 1)
-      this.days.push({ month: m, days })
-    })
+  constructor(
+    private dialog: MatDialog,
+    private changeDetection: ChangeDetectorRef
+  ) {
+    this.years.forEach((y) => this._generateMonths(y))
     console.log(this.days)
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    console.log('sys', this._getNumberOfDays(new Date(2022, 1, 1)))
+  }
 
+  ngAfterViewInit(): void {
+    this.todayEl.nativeElement.scrollIntoView({ behaviour: 'smooth' })
+  }
+
+  private _generateMonths(year: number) {
+    this.months.forEach((m, index) => {
+      const numberOfDays = new Date(year, index + 1, 0).getDate()
+      const days = Array(numberOfDays)
+        .fill(1)
+        .map((x, i) => i + 1)
+      this.days.push({ month: m, days, year })
+    })
+  }
   getMonthLeftOffset(index: number) {
     const prevMonthIndex = index - 1
     if (prevMonthIndex < 0) {
@@ -108,51 +138,140 @@ export class TimelineComponent implements OnInit {
     }
     const value = Array(index)
       .fill(0)
-      .reduce((acc, v, i) => acc + 40 * this.days[i].days.length, 0)
+      .reduce((acc, v, i) => acc + GRID_WIDTH * this.days[i].days.length, 0)
 
     return value + 'px'
   }
 
   getDropColumns() {
-    const year = 2023
+    const columns: number[] = []
+    this.years.forEach((y) => {
+      columns.push(...this._getDaysInYear(y))
+    })
+    return columns
+  }
+
+  private _getDaysInYear(year: number): number[] {
     const totalDays =
       (year % 4 === 0 && year % 100 > 0) || year % 400 == 0 ? 366 : 365
-    console.log('columns count',Array(totalDays)
-    .fill(1)
-    .map((x, i) => i))
-      return Array(totalDays)
+    console.log(
+      'columns count',
+      Array(totalDays)
+        .fill(1)
+        .map((x, i) => i)
+    )
+    return Array(totalDays)
       .fill(1)
       .map((x, i) => i)
   }
 
   getDropColumnLeftOffset(index: number) {
-    return index * 40 + 'px'
+    return index * GRID_WIDTH + 'px'
   }
 
   getProjectLeftOffset(startDate: string) {
-    const date = new Date(startDate);
+    const date = new Date(startDate)
     console.log(date, date.getDate(), date.getMonth())
-    const value = Array(date.getMonth()).fill(0).reduce((acc, v, i) => acc + this.days[i].days.length * 40, 0)
-    return (date.getDate() - 1) * 40 +  value + 'px';
+    const differenceInDays = this._getNumberOfDays(date)
+    // store in memcache
+    return GRID_WIDTH * differenceInDays + 'px'
   }
 
   getTodayLeftOffset() {
-    const today = new Date();
+    const today = new Date()
+    const differenceInDays = this._getNumberOfDays(today)
+    return GRID_WIDTH * differenceInDays + 'px'
+  }
 
-    const value = Array(today.getMonth()).fill(0).reduce((acc, v, i) => acc + this.days[i].days.length * 40, 0)
-    return (today.getDate() - 1) * 40 +  value + 'px';
+  private _getNumberOfDays(
+    date: Date,
+    initialDate = new Date(this.years[0], 0, 1)
+  ) {
+    const differenceInTime = date.getTime() - initialDate.getTime()
+    return Math.round(differenceInTime / (1000 * 3600 * 24))
   }
 
   getTodayLeftOffsetWithTime() {
-    const today = new Date();
-
-    const value = Array(today.getMonth()).fill(0).reduce((acc, v, i) => acc + this.days[i].days.length * 40, 0)
-    return (today.getDate() - 1) * 40 +  value + (40/24 * today.getHours()) + 'px';
+    const today = new Date()
+    const differenceInDays = this._getNumberOfDays(today)
+    return GRID_WIDTH * differenceInDays + (40 / 24) * today.getHours() + 'px'
   }
 
-  addProject(col: number) {
-    console.log(col)
+  addProject(year?: number, month?: string, day?: number) {
+    let startDate = new Date()
+    if (month && year) {
+      const startMonth = this.months.indexOf(month)
+      startDate = new Date(year, startMonth, day)
+    }
+    const launchDate = new Date(startDate).setDate(startDate.getDate() + 5)
+    const dialogRef = this.dialog.open(ProjectDetailsDialogComponent, {
+      data: { startDate, launchDate }
+    })
+    dialogRef.afterClosed().subscribe((data) => {
+      if (data) {
+        const newProject = {
+          id: this.data.length + 1,
+          project: data.project || 'unplanned project',
+          priority: data.priority || 'P0',
+          stage: data.stage || 'Launched',
+          progress: '100%',
+          status: data.status || 'At risk',
+          labels: ['users', 'mobile'],
+          openRisks: 3,
+          startDate: this.formatDate(startDate),
+          launchDate: this.formatDate(launchDate),
+          owner: 'Prod1',
+          participants: ['Eng 1', 'Eng 3', 'M1']
+        }
+        this.data = [...this.data, newProject]
+        this.changeDetection.detectChanges()
+        this.scrollToProjectCard(newProject)
+      }
+    })
   }
 
-  trackByIndex: TrackByFunction<number> = (index) => index;
+  openProject(data: any) {
+    const dialogRef = this.dialog.open(ProjectDetailsDialogComponent, { data })
+    dialogRef.afterClosed().subscribe((modData) => {
+      let project: any = this.data.find((p) => p.project === data.project) || {}
+      project = { ...project, ...modData }
+      console.log(project)
+      this.data.splice(this.data.indexOf(data), 1, project)
+      this.changeDetection.detectChanges()
+    })
+  }
+
+  formatDate(date: any) {
+    let d = new Date(date),
+      month = '' + (d.getMonth() + 1),
+      day = '' + d.getDate(),
+      year = d.getFullYear()
+
+    if (month.length < 2) month = '0' + month
+    if (day.length < 2) day = '0' + day
+
+    return [month, day, year].join('-')
+  }
+
+  scrollToElement(el: HTMLElement) {
+    el.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  scrollToProjectCard(project: any) {
+    const id = 'project-' + project.id
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  trackByIndex: TrackByFunction<any> = (index: number, data: any) => data.id
+
+  getProjectCardWidth(project: any) {
+    return (
+      this._getNumberOfDays(
+        new Date(project.launchDate),
+        new Date(project.startDate)
+      ) *
+        GRID_WIDTH +
+      'px'
+    )
+  }
 }

@@ -1,0 +1,75 @@
+<h2 mat-dialog-title>
+  <span *ngIf="!data?.project">Add</span
+  ><span *ngIf="data?.project">Update</span> Project
+</h2>
+<mat-dialog-content class="mat-typography">
+  <form [formGroup]="form">
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Project title</mat-label>
+      <input
+        matInput
+        formControlName="project"
+        placeholder="Title"
+        cdkFocusInitial
+      />
+      <mat-hint>E.g. Create timeline feature</mat-hint>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="me-2">
+      <mat-label>Priority</mat-label>
+      <mat-select formControlName="priority">
+        <mat-option value="P0">P0</mat-option>
+        <mat-option value="P1">P1</mat-option>
+        <mat-option value="P2">P2</mat-option>
+        <mat-option value="P3">P3</mat-option>
+        <mat-option value="P4">P4</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="me-2">
+      <mat-label>Stage</mat-label>
+      <input
+        matInput
+        formControlName="stage"
+        placeholder="Stage"
+      />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="me-2">
+      <mat-label>Status</mat-label>
+      <input matInput formControlName="status" placeholder="Status" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="me-2">
+      <mat-label>Start date</mat-label>
+      <input
+        matInput
+        [matDatepicker]="startPicker"
+        formControlName="startDate"
+      />
+      <mat-hint>MM/DD/YYYY</mat-hint>
+      <mat-datepicker-toggle
+        matSuffix
+        [for]="startPicker"
+      ></mat-datepicker-toggle>
+      <mat-datepicker #startPicker></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="me-2">
+      <mat-label>Launch date</mat-label>
+      <input
+        matInput
+        [matDatepicker]="launchPicker"
+        formControlName="launchDate"
+      />
+      <mat-hint>MM/DD/YYYY</mat-hint>
+      <mat-datepicker-toggle
+        matSuffix
+        [for]="launchPicker"
+      ></mat-datepicker-toggle>
+      <mat-datepicker #launchPicker></mat-datepicker>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-button (click)="addProject()" [disabled]="form.invalid">
+    <span *ngIf="data?.project">Update</span>
+    <span *ngIf="!data?.project">Add</span>
+  </button>
+</mat-dialog-actions>
