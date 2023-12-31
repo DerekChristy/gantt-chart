@@ -52,7 +52,9 @@ export class TimelineComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.todayEl.nativeElement.scrollIntoView({ behaviour: 'smooth' })
+    setTimeout(() => {
+      this.todayEl.nativeElement.scrollIntoView({ behavior: 'smooth' })
+    }, 500)
   }
 
   private _generateMonths(year: number) {
