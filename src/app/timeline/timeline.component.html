@@ -16,7 +16,6 @@
       <div
         class="project-card-height border-top p-2"
         style="cursor: pointer"
-        
         (click)="addProject()"
       >
         <button mat-icon-button>Add <mat-icon>add</mat-icon></button>
@@ -40,7 +39,12 @@
       <div class="d-flex">
         <span style="flex: 1 1 auto"></span>
         <div>
-          <button mat-flat-button (click)="scrollToElement(today)" class="me-2">
+          <button
+            mat-stroked-button
+            color="primary"
+            (click)="scrollToElement(today)"
+            class="me-3"
+          >
             Today
           </button>
           <mat-form-field appearance="outline">
@@ -114,7 +118,9 @@
           >
             <div class="position-relative">
               <div class="tl-today-color"></div>
-              <span style="position: relative; color: white">{{ currentDate.getDate() }}</span>
+              <span style="position: relative; color: white">{{
+                currentDate.getDate()
+              }}</span>
             </div>
           </div>
         </div>
@@ -136,7 +142,7 @@
       <div class="tl-row">
         <div
           *ngFor="let row of data; trackBy: trackByIndex"
-          class="card project-card-height p-1"
+          class="card project-card-height p-1 position-relative"
           [style.left]="getProjectLeftOffset(row.startDate)"
           [style.width]="getProjectCardWidth(row)"
           style="cursor: pointer"
@@ -144,12 +150,12 @@
           [id]="'project-' + row.id"
           [matTooltip]="row.startDate + ' to ' + row.launchDate"
         >
-          {{ row.project }} | {{ row.priority }} | Stage: {{ row.stage }}
+          <span class="position-absolute pt-1" style="width: 100vw">
+            <span class="font-weight-bold">{{ row.project }}</span> | {{ row.priority }} | Stage:
+            {{ row.stage }}</span
+          >
         </div>
-        <div
-        class="d-none card project-card-height p-1"
-      >
-      </div>
+        <div class="d-none card project-card-height p-1"></div>
       </div>
     </div>
   </div>

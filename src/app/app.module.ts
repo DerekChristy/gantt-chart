@@ -6,7 +6,7 @@ import { AppComponent } from './app.component'
 import { HomeComponent } from './home/home.component'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { TimelineComponent } from './timeline/timeline.component'
-// import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
 
 /** Material modules */
 import { MatButtonModule } from '@angular/material/button'
@@ -22,14 +22,16 @@ import {MatIconModule} from '@angular/material/icon';
 /** Material modules end */
 
 import { ProjectDetailsDialogComponent } from './project-details-dialog/project-details-dialog.component'
-import { ReactiveFormsModule } from '@angular/forms'
+import { ReactiveFormsModule } from '@angular/forms';
+import { ChartsComponent } from './charts/charts.component'
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     TimelineComponent,
-    ProjectDetailsDialogComponent
+    ProjectDetailsDialogComponent,
+    ChartsComponent
   ],
   imports: [
     BrowserModule,
@@ -45,8 +47,8 @@ import { ReactiveFormsModule } from '@angular/forms'
     MatSelectModule,
     MatTooltipModule,
     MatSidenavModule,
-    MatIconModule
-    // NgxChartsModule
+    MatIconModule,
+    NgxChartsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

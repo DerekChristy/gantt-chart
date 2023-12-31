@@ -53,7 +53,7 @@
   position: absolute;
   width: 40px;
   height: 100%;
-  border-right: 1px rgb(196, 196, 196) inset;
+  border-right: 1px rgba(175, 175, 175, 0.183) inset;
   cursor: crosshair;
 }
 .tl-highlighted-number-container {
@@ -75,7 +75,7 @@
   top: -1px;
 }
 .project-card-height {
-  height: 50px;
+  height: 40px;
 }
 .sidenav {
   min-width: 11rem;

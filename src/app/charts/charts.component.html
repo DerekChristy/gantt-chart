@@ -1,0 +1,39 @@
+<div>
+  <mat-form-field appearance="outline">
+    <mat-label>Filter by priority</mat-label>
+    <mat-select [formControl]="priorities" multiple>
+      <mat-select-trigger>
+        {{priorities.value ? priorities.value[0] : ''}}
+        <span *ngIf="priorities.value?.length > 1" class="example-additional-selection">
+          (+{{priorities.value.length - 1}} {{priorities.value?.length === 2 ? 'other' : 'others'}})
+        </span>
+      </mat-select-trigger>
+      <mat-option *ngFor="let priority of prioritiesList" [value]="priority">{{priority}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="outline">
+    <mat-label>Filter by stages</mat-label>
+    <mat-select [formControl]="stages" multiple>
+      <mat-select-trigger>
+        {{stages.value ? stages.value[0] : ''}}
+        <span *ngIf="stages.value?.length > 1" class="example-additional-selection">
+          (+{{stages.value.length - 1}} {{stages.value?.length === 2 ? 'other' : 'others'}})
+        </span>
+      </mat-select-trigger>
+      <mat-option *ngFor="let stage of stagesList" [value]="stage">{{stage}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+<div>
+  <ngx-charts-bar-vertical
+    [results]="data"
+    [xAxis]="true"
+    [yAxis]="true"
+    [legend]="true"
+    [showXAxisLabel]="true"
+    [showYAxisLabel]="true"
+    xAxisLabel="Team members"
+    yAxisLabel="No. of projects"
+  >
+  </ngx-charts-bar-vertical>
+</div>
